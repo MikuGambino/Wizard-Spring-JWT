@@ -1,0 +1,33 @@
+volumes:
+  pgdata:
+
+services:
+  db:
+    container_name: wizard_db
+    restart: always
+    image: 'postgres:16.2'
+    env_file:
+      - postgres.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - wizard-network
+
+  app:
+    container_name: wizard_app
+    restart: always
+    build: .
+    ports:
+      - "9090:9090"
+    depends_on:
+      - "db"
+    env_file:
+      - app.env
+    networks:
+      - wizard-network
+
+networks:
+  wizard-network:
+    driver: bridge
