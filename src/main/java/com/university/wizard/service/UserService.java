@@ -22,21 +22,24 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    public Optional<User> getByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public boolean userExists(String username) {
+        return userRepository.findByUsername(username).isPresent();
     }
 
     public Optional<User> getByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    public void saveUser(User user) {
-        userRepository.save(user);
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = getByUsername(username).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("Пользователь '%s' не найден", username)
-        ));
+        User user = getByUsername(username);
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())

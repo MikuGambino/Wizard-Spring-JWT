@@ -1,6 +1,7 @@
 package com.university.wizard.controller;
 
 import com.university.wizard.model.dto.JwtAuthenticationResponse;
+import com.university.wizard.model.dto.RefreshTokenRequest;
 import com.university.wizard.model.dto.SignInRequest;
 import com.university.wizard.model.dto.SignUpRequest;
 import com.university.wizard.service.AuthService;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,5 +34,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody @Valid SignInRequest request) {
         return ResponseEntity.ok(authService.signIn(request));
+    }
+
+    @Operation(summary = "Обновление токена")
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtAuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authService.refreshToken(request));
     }
 }

@@ -11,5 +11,7 @@ import lombok.Data;
 @Schema(description = "Ответ c access токеном")
 public class JwtAuthenticationResponse {
     @Schema(description = "Access токен", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
-    private String token;
+    private String accessToken;
+    @Schema(description = "Refresh токен", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
+    private String refreshToken;
 }

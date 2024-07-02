@@ -9,11 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.juli.logging.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,10 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.security.SignatureException;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
@@ -45,22 +38,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtils.getUsername(jwt);
             } catch (ExpiredJwtException e) {
-                logger.error("JWT Token has expired", e);
+                logger.error("JWT Access Token has expired", e);
                 setErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT Token has expired");
                 return;
             } catch (MalformedJwtException e) {
-                logger.error("Invalid JWT Token", e);
+                logger.error("Invalid JWT Access Token", e);
                 setErrorResponse(response, HttpStatus.UNAUTHORIZED, "Invalid JWT Token");
                 return;
             } catch (Exception e) {
-                logger.error("Error processing JWT Token", e);
-                setErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "Error processing JWT Token");
+                logger.error("Error processing JWT Access Token", e);
+                setErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "Error processing JWT Access Token");
                 return;
             }
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            if (jwtUtils.validateToken(jwt, userDetails)) {
+            if (jwtUtils.isAccessTokenValid(jwt, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         userDetails,
